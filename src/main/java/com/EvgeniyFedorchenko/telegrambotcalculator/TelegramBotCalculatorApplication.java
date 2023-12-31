@@ -13,6 +13,7 @@ public class TelegramBotCalculatorApplication {
     public static void main(String[] args) {
         SpringApplication.run(TelegramBotCalculatorApplication.class, args);
     }
+
     @Bean
     TelegramBotsApi telegramBotsApi(TelegramBot telegramBot) throws TelegramApiException {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);

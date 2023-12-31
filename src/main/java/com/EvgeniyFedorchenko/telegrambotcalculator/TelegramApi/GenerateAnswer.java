@@ -4,20 +4,24 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 public class GenerateAnswer {
 
+    // TODO: 30.12.2023 Возможно стоит разделить функционал на ConvertMode и CalculateMode
+    //       И назначать их по кнопкам в меню. Если юзер в неправильном режиме ввел выражение, то предлагать
+    //       переключиться на другой режим по всплывающим кнопкам
     static String parseMessage(Message message) {
         return switch (message.getText()) {
             case "/start" -> startCommand(message.getChat().getFirstName());
             case "/help" -> helpCommand();
-            default -> validateAndGoToCalculating(message.getText());
+            default -> sendToCalculating(message.getText());
         };
     }
 
-    private static String validateAndGoToCalculating(String message) {
-        if (message.matches("^[IiVvXxLlCcDdMmNn0-9()!^√*/÷:+-]+$")) {
-            return "Done! It's correct";   // Place to go to calculating
-        } else {
-            return "Sorry, but there’s no such command or you have entered an unsupported character";
-        }
+    private static String sendToCalculating(String message) {
+        return (firstValidate(message)) ? "Done! It's correct" :
+                "Sorry, but there’s no such command or you have entered an unsupported character";
+    }
+
+    private static boolean firstValidate(String message) {
+        return message.matches("^[IiVvXxLlCcDdMmNn0-9()!^√*/÷:+-]+$");
     }
 
     private static String startCommand(String firstName) {
@@ -35,7 +39,7 @@ public class GenerateAnswer {
 
     private static String helpCommand() {
         return """
-                Available actions: х, ÷, +, -, √, ^ ! ( )
+                Available actions: х  ÷  +  -  √  ^  !  ( )
                                 
                                 
                 Amount of operands is unlimited
