@@ -1,5 +1,6 @@
 package com.evgeniyfedorchenko.telegrambotcalculator.telegramapi;
 
+import com.evgeniyfedorchenko.telegrambotcalculator.logic.GeneralLogic;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 public class GenerateAnswer {
@@ -16,7 +17,7 @@ public class GenerateAnswer {
     }
 
     private static String sendToCalculating(String message) {
-        return (firstValidate(message)) ? "Done! It's correct" :
+        return (firstValidate(message)) ? GeneralLogic.mainCalc(message) :
                 "Sorry, but there’s no such command or you have entered an unsupported character";
     }
 
