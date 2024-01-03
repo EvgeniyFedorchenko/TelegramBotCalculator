@@ -1,5 +1,7 @@
 package com.evgeniyfedorchenko.telegrambotcalculator.logic;
 
+import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.UncorrectedRomanOperand;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,16 +17,31 @@ public class GeneralLogic {
         // Разделение режимов
 
         if (!validateBrackets(listOfInput)) {
-            return "Oops!\n Seems like the amount of opening and closing brackets is not equal";
+            return "Oops!\nSeems like the amount of opening and closing brackets is not equal";
         }
-        boolean romanOperandsArePresent = checkRoman(listOfInput);
-        // Перевод арабских операндов
+
+
+        boolean romanOperandsArePresent;
+        for (int i = 0; i < listOfInput.size(); i++) {
+            if (checkRoman(listOfInput.get(i))) {
+                romanOperandsArePresent = true;
+                try {
+                    listOfInput.set(i, Convert.ConvertingToArabNum(listOfInput.get(i)));
+                } catch (UncorrectedRomanOperand e) {
+                    // TODO: 03.01.2024 Добавить кнопку под сообщением "Help message" с инфо про составление римских чисел
+                    return "Oops!\n" + e.getMessage() + "Maybe you want to read a hint on how to compose Roman numbers";
+                }
+            }
+        }
+
 
         while (listOfInput.contains("(")) {
             List<String> deepestExpression = searchDeepestExpression(listOfInput);
             // Считаем, пересобираем
         }
 
+
+        // return answer from mainCalc()
         return null;
     }
 
@@ -49,6 +66,18 @@ public class GeneralLogic {
         List<String> romanNumbers = Arrays.asList("I", "V", "X", "L", "C", "D", "M", "N");
 
         for (String operand : listOfInput) {
+            if (romanNumbers.contains(operand.split("")[0])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean checkRoman(String operand) {
+
+        List<String> romanNumbers = Arrays.asList("I", "V", "X", "L", "C", "D", "M", "N");
+
+        for (String s : operand.split("")) {
             if (romanNumbers.contains(operand.split("")[0])) {
                 return true;
             }
