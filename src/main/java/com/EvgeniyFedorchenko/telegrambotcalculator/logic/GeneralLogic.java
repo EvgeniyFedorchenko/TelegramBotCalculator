@@ -1,14 +1,16 @@
 package com.evgeniyfedorchenko.telegrambotcalculator.logic;
 
-import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.UncorrectedRomanOperand;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.StringUtils.isNumeric;
+
 public class GeneralLogic {
+
+    public static boolean romanOperandsArePresent = false;
 
     public static String mainCalc(String expression) {
 
@@ -21,15 +23,13 @@ public class GeneralLogic {
         }
 
 
-        boolean romanOperandsArePresent;
-        for (int i = 0; i < listOfInput.size(); i++) {
-            if (checkRoman(listOfInput.get(i))) {
-                romanOperandsArePresent = true;
-                try {
-                    listOfInput.set(i, Convert.ConvertingToArabNum(listOfInput.get(i)));
-                } catch (UncorrectedRomanOperand e) {
-                    // TODO: 03.01.2024 Добавить кнопку под сообщением "Help message" с инфо про составление римских чисел
-                    return "Oops!\n" + e.getMessage() + "Maybe you want to read a hint on how to compose Roman numbers";
+        for (String s : listOfInput) {
+            if (checkRomanBool(s)) {
+                String convertedOperand = convertRoman(s);
+                if (!isNumeric(convertedOperand)) {
+                    return convertedOperand;
+                } else {
+                    listOfInput.set(listOfInput.indexOf(s), convertedOperand);
                 }
             }
         }
@@ -43,6 +43,20 @@ public class GeneralLogic {
 
         // return answer from mainCalc()
         return null;
+    }
+
+    private static boolean checkRomanBool(String s) {
+        List<String> romanNumbers = Arrays.asList("I", "V", "X", "L", "C", "D", "M", "N");
+        return romanNumbers.contains(s.split("")[0]);
+    }
+
+    private static String convertRoman(String operand) {
+
+        romanOperandsArePresent = true;
+        if (!isNumeric(Convert.ConvertingToArabNum(operand))) {
+            return "Oops!\nRoman operand \"" + operand + "\" is uncorrected\n\nMaybe you want to read a hint on how to compose Roman numbers";
+        }
+        return operand;
     }
 
     private static List<String> searchDeepestExpression(List<String> listOfInput) {
@@ -59,30 +73,6 @@ public class GeneralLogic {
             }
         }
         return null;
-    }
-
-    private static boolean checkRoman(List<String> listOfInput) {
-
-        List<String> romanNumbers = Arrays.asList("I", "V", "X", "L", "C", "D", "M", "N");
-
-        for (String operand : listOfInput) {
-            if (romanNumbers.contains(operand.split("")[0])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean checkRoman(String operand) {
-
-        List<String> romanNumbers = Arrays.asList("I", "V", "X", "L", "C", "D", "M", "N");
-
-        for (String s : operand.split("")) {
-            if (romanNumbers.contains(operand.split("")[0])) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static List<String> bringToStandard(String expression) {
@@ -102,6 +92,9 @@ public class GeneralLogic {
         Map<String, Long> brackets = listOfInput.stream()
                 .filter(s -> s.equals(")") || s.equals("("))
                 .collect(Collectors.groupingBy(s -> s, Collectors.counting()));
+
+        if (!brackets.containsKey("(")) brackets.put("(", 0L);
+        if (!brackets.containsKey(")")) brackets.put(")", 0L);
 
         return brackets.get("(").equals(brackets.get(")"));
     }
