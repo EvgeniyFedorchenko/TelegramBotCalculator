@@ -1,10 +1,9 @@
 package com.evgeniyfedorchenko.telegrambotcalculator.exceptions;
 
-import java.io.IOException;
-
-public class UncorrectedRomanOperand extends IOException {
+public class UncorrectedRomanOperand extends RuntimeException {
 
     String romanOperand;
+
     public UncorrectedRomanOperand(String message, String romanOperand) {
         super(message);
         this.romanOperand = romanOperand;

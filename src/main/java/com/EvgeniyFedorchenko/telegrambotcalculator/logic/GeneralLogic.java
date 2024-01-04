@@ -1,50 +1,44 @@
 package com.evgeniyfedorchenko.telegrambotcalculator.logic;
 
+import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.BracketsCountException;
+import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.UncorrectedRomanOperand;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.evgeniyfedorchenko.telegrambotcalculator.logic.RomanNumbersUtils.*;
+import static com.evgeniyfedorchenko.telegrambotcalculator.logic.RomanNumeralsUtils.ConvertingToArabNum;
 
 public class GeneralLogic {
 
     public static boolean romanOperandsArePresent = false;
 
-    public static String mainCalc(String expression) {
+
+    public static String mainCalc(String expression) throws UncorrectedRomanOperand, BracketsCountException {
 
 
         List<String> listOfInput = bringToStandard(expression);
 
+
         // Разделение режимов
 
-        if (!validateBrackets(listOfInput)) {
-            return "Oops!\nSeems like the amount of opening and closing brackets is not equal";
-        }
 
-
-        for (String s : listOfInput) {
-            boolean isRoman = checkRoman(s);
-            if (isRoman && !checkCorrectRoman(s)) {
-                return "Oops!\nRoman operand \"" + s + "\" is uncorrected\n\nMaybe you want to read a hint on how to compose Roman numbers";
-            } else if (isRoman) {
-                romanOperandsArePresent = true;
+        /*for (String s : listOfInput) {
+            if (checkRoman(s)) {
                 listOfInput.set(listOfInput.indexOf(s), ConvertingToArabNum(s));
             }
-        }
-        /*if (listOfInput.stream().anyMatch(s -> checkRoman(s) && !checkCorrectRoman(s))) {
-            return "Oops!\nRoman operand \"\" is uncorrected\n\nMaybe you want to read a hint on how to compose Roman numbers";
-        }
+        }*/
         listOfInput.stream()
-                .filter(RomanNumbersUtils::checkRoman)
-                .forEach(s -> {
-                    romanOperandsArePresent = true;
-                    listOfInput.set(listOfInput.indexOf(s), ConvertingToArabNum(s));
-                });*/
+                .filter(RomanNumeralsUtils::checkRoman)
+                .forEach(s -> listOfInput.set(listOfInput.indexOf(s), ConvertingToArabNum(s)));
 
 
         while (listOfInput.contains("(")) {
+            if (!validateBrackets(listOfInput)) {
+                throw new BracketsCountException("Count of opening and closing brackets is not equal in expression: " + expression);
+            }
             List<String> deepestExpression = searchDeepestExpression(listOfInput);
             // Считаем, пересобираем
         }
@@ -68,14 +62,15 @@ public class GeneralLogic {
                 return new ArrayList<>(deepestExpression);
             }
         }*/
-        int innermostOpenBracketPosition = IntStream.range(0, listOfInput.size())
+        int innerOpenBracketPosition = IntStream.range(0, listOfInput.size())
                 .filter(i -> listOfInput.get(i).equals("("))
                 .reduce((first, second) -> second).orElse(0);
 
-        return listOfInput.subList(innermostOpenBracketPosition,
-                IntStream.range(innermostOpenBracketPosition, listOfInput.size())
+        int innerCloseBracketPosition = IntStream.range(innerOpenBracketPosition, listOfInput.size())
                 .filter(i -> listOfInput.get(i).equals(")"))
-                .findFirst().orElse(0));
+                .findFirst().orElse(0);
+
+        return listOfInput.subList(innerOpenBracketPosition, innerCloseBracketPosition);
     }
 
     private static List<String> bringToStandard(String expression) {

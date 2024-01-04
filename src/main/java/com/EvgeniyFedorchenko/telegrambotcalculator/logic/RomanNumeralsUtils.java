@@ -1,13 +1,23 @@
 package com.evgeniyfedorchenko.telegrambotcalculator.logic;
 
+import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.UncorrectedRomanOperand;
+
 import java.util.Arrays;
 import java.util.List;
 
-public class RomanNumbersUtils {
-    public static boolean checkRoman(String operand) {
+public class RomanNumeralsUtils {
+    public static boolean checkRoman(String operand) throws UncorrectedRomanOperand {
 
         List<String> romanNumbers = Arrays.asList("I", "V", "X", "L", "C", "D", "M", "N");
-        return romanNumbers.contains(operand.split("")[0]);
+        boolean isRoman = romanNumbers.contains(operand.split("")[0]);
+
+        if (isRoman && !checkCorrectRoman(operand)) {
+            throw new UncorrectedRomanOperand("Uncorrected roman operand: ", operand);
+        } else if (isRoman) {
+            GeneralLogic.romanOperandsArePresent = true;
+            return true;
+        }
+        return false;
     }
 
     public static boolean checkCorrectRoman(String romanOperand) {
@@ -31,8 +41,6 @@ public class RomanNumbersUtils {
         }
         return true;
     }
-
-
 
     public static String ConvertingToArabNum(String operand) {
 
@@ -59,5 +67,4 @@ public class RomanNumbersUtils {
         }
         return Integer.toString(arabNum);
     }
-
 }
