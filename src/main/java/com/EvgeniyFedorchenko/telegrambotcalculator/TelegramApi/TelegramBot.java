@@ -13,6 +13,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.evgeniyfedorchenko.telegrambotcalculator.telegramapi.GenerateAnswer.parseMessage;
+
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
     @Value("${bot.name}")
@@ -42,7 +44,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
             SendMessage outMess = new SendMessage();
             outMess.setChatId(update.getMessage().getChatId());
-            outMess.setText(GenerateAnswer.parseMessage(update.getMessage()));
+            outMess.setText(parseMessage(update.getMessage()));
 
             try {
                 execute(outMess);
