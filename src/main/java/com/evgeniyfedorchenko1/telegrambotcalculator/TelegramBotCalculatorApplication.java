@@ -1,6 +1,6 @@
-package com.evgeniyfedorchenko.telegrambotcalculator;
+package com.evgeniyfedorchenko1.telegrambotcalculator;
 
-import com.evgeniyfedorchenko.telegrambotcalculator.telegramapi.TelegramBot;
+import com.evgeniyfedorchenko1.telegrambotcalculator.telegramapi.TelegramBot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +16,7 @@ public class TelegramBotCalculatorApplication {
 
     @Bean
     TelegramBotsApi telegramBotsApi(TelegramBot telegramBot) throws TelegramApiException {
+
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
         telegramBotsApi.registerBot(telegramBot);
         return telegramBotsApi;

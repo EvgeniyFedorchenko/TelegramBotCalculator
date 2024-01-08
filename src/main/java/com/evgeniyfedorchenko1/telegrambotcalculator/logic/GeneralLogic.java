@@ -1,6 +1,6 @@
-package com.evgeniyfedorchenko.telegrambotcalculator.logic;
+package com.evgeniyfedorchenko1.telegrambotcalculator.logic;
 
-import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.BracketsCountException;
+import com.evgeniyfedorchenko1.telegrambotcalculator.exceptions.BracketsCountException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.evgeniyfedorchenko.telegrambotcalculator.logic.RomanNumeralsUtils.ConvertingToArabNum;
+import static com.evgeniyfedorchenko1.telegrambotcalculator.logic.RomanNumeralsUtils.ConvertingToArabNum;
 
 public class GeneralLogic {
 
