@@ -1,6 +1,6 @@
-package com.evgeniyfedorchenko1.telegrambotcalculator;
+package com.evgeniyfedorchenko.telegrambotcalculator;
 
-import static com.evgeniyfedorchenko1.telegrambotcalculator.logic.RomanNumeralsUtils.deepRomanChecker;
+import static com.evgeniyfedorchenko.telegrambotcalculator.logic.RomanNumeralsUtils.deepRomanChecker;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TelegramBotCalculatorTest {

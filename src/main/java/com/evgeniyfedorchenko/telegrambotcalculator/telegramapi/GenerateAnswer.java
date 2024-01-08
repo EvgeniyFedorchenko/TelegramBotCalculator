@@ -1,8 +1,8 @@
-package com.evgeniyfedorchenko1.telegrambotcalculator.telegramapi;
+package com.evgeniyfedorchenko.telegrambotcalculator.telegramapi;
 
-import com.evgeniyfedorchenko1.telegrambotcalculator.exceptions.BracketsCountException;
-import com.evgeniyfedorchenko1.telegrambotcalculator.exceptions.UncorrectedRomanOperand;
-import com.evgeniyfedorchenko1.telegrambotcalculator.logic.GeneralLogic;
+import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.BracketsCountException;
+import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.UncorrectedRomanOperand;
+import com.evgeniyfedorchenko.telegrambotcalculator.logic.GeneralLogic;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 public class GenerateAnswer {

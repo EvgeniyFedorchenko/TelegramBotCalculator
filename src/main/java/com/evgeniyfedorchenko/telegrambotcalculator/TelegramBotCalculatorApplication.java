@@ -1,6 +1,6 @@
-package com.evgeniyfedorchenko1.telegrambotcalculator;
+package com.evgeniyfedorchenko.telegrambotcalculator;
 
-import com.evgeniyfedorchenko1.telegrambotcalculator.telegramapi.TelegramBot;
+import com.evgeniyfedorchenko.telegrambotcalculator.telegramapi.TelegramBot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

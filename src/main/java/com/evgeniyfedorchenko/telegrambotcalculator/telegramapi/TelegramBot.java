@@ -1,4 +1,4 @@
-package com.evgeniyfedorchenko1.telegrambotcalculator.telegramapi;
+package com.evgeniyfedorchenko.telegrambotcalculator.telegramapi;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;

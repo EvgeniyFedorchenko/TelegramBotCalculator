@@ -1,4 +1,4 @@
-package com.evgeniyfedorchenko1.telegrambotcalculator.exceptions;
+package com.evgeniyfedorchenko.telegrambotcalculator.exceptions;
 
 public class UncorrectedRomanOperand extends RuntimeException {
 

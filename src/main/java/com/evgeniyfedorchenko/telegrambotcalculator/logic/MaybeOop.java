@@ -1,4 +1,4 @@
-package com.evgeniyfedorchenko1.telegrambotcalculator.logic;
+package com.evgeniyfedorchenko.telegrambotcalculator.logic;
 
 import java.util.ArrayList;
 import java.util.List;

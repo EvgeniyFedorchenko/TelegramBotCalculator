@@ -1,4 +1,4 @@
-package com.evgeniyfedorchenko1.telegrambotcalculator.exceptions;
+package com.evgeniyfedorchenko.telegrambotcalculator.exceptions;
 
 import java.io.IOException;
 

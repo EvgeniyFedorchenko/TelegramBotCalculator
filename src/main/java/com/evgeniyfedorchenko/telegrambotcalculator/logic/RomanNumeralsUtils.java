@@ -1,6 +1,6 @@
-package com.evgeniyfedorchenko1.telegrambotcalculator.logic;
+package com.evgeniyfedorchenko.telegrambotcalculator.logic;
 
-import com.evgeniyfedorchenko1.telegrambotcalculator.exceptions.UncorrectedRomanOperand;
+import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.UncorrectedRomanOperand;
 
 import java.util.*;
 
