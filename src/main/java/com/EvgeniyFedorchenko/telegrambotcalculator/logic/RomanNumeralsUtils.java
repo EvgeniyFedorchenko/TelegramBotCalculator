@@ -2,16 +2,27 @@ package com.evgeniyfedorchenko.telegrambotcalculator.logic;
 
 import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.UncorrectedRomanOperand;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class RomanNumeralsUtils {
-    public static boolean checkRoman(String operand) throws UncorrectedRomanOperand {
 
-        List<String> romanNumbers = Arrays.asList("I", "V", "X", "L", "C", "D", "M", "N");
-        boolean isRoman = romanNumbers.contains(operand.split("")[0]);
+    private static final Map<String, Integer> CONVERT_MAP = new LinkedHashMap<>(8) {{
+        put("I", 1);
+        put("X", 10);
+        put("C", 100);
+        put("M", 1000);
+        put("V", 5);
+        put("L", 50);
+        put("D", 500);
+        put("N", 0);
+    }};
 
-        if (isRoman && !checkCorrectRoman(operand)) {
+
+    public static boolean liteRomanChecker(String operand) throws UncorrectedRomanOperand {
+
+        boolean isRoman = CONVERT_MAP.containsKey(operand.split("")[0]);
+
+        if (isRoman && !deepRomanChecker(operand)) {
             throw new UncorrectedRomanOperand("Uncorrected roman operand: ", operand);
         } else if (isRoman) {
             GeneralLogic.romanOperandsArePresent = true;
@@ -20,51 +31,32 @@ public class RomanNumeralsUtils {
         return false;
     }
 
-    public static boolean checkCorrectRoman(String romanOperand) {
+    public static boolean deepRomanChecker(String romanOperand) {
 
         List<String> operandAsList = Arrays.asList(romanOperand.split(""));
-
-        String romNumMultiple10 = "I X C M";
-        String romNumMultiple5 = "V L D";
+        String romanNumbs = String.join("", CONVERT_MAP.keySet()).substring(4);
         int duplicate = 1;
 
         for (int i = 0; i < operandAsList.size() - 1; i++) {
-            if (operandAsList.get(i).equals(operandAsList.get(i + 1))) {
+            if ((romanNumbs.contains(operandAsList.get(i)) && romanNumbs.contains(operandAsList.get(i + 1))) || duplicate > 3) {
+                return false;
+            } else if (operandAsList.get(i).equals(operandAsList.get(i + 1))) {
                 duplicate += 1;
-                if (duplicate > 3 && romNumMultiple10.contains(operandAsList.get(i))) {
-                    return false;
-                }
-                if (duplicate > 1 && romNumMultiple5.contains(operandAsList.get(i))) {
-                    return false;
-                }
-            } else duplicate = 1;
+            }
         }
         return true;
     }
 
     public static String ConvertingToArabNum(String operand) {
 
-        String[] romOperandArray = operand.split("");
-        int[] arabOperandArray = new int[romOperandArray.length];
+        List<String> operandAsList = new ArrayList<>(List.of(operand.split("")));
+        int answer = CONVERT_MAP.get(operandAsList.get(operandAsList.size() - 1));
 
-        for (int i = 0; i < romOperandArray.length; i++) {
-            switch (romOperandArray[i]) {
-                case "I" -> arabOperandArray[i] = 1;
-                case "V" -> arabOperandArray[i] = 5;
-                case "X" -> arabOperandArray[i] = 10;
-                case "L" -> arabOperandArray[i] = 50;
-                case "C" -> arabOperandArray[i] = 100;
-                case "D" -> arabOperandArray[i] = 500;
-                case "M" -> arabOperandArray[i] = 1000;
-                case "N" -> arabOperandArray[i] = 0;
-            }
+        for (int i = operandAsList.size() - 1; i > 0; i--) {
+            answer += (CONVERT_MAP.get(operandAsList.get(i)) <= CONVERT_MAP.get(operandAsList.get(i - 1)))
+                    ? CONVERT_MAP.get(operandAsList.get(i - 1))
+                    : -CONVERT_MAP.get(operandAsList.get(i - 1));
         }
-        int arabNum = arabOperandArray[arabOperandArray.length - 1];
-        for (int i = arabOperandArray.length - 1; i > 0; i--) {
-            if (arabOperandArray[i] <= arabOperandArray[i - 1]) {
-                arabNum += arabOperandArray[i - 1];
-            } else arabNum -= arabOperandArray[i - 1];
-        }
-        return Integer.toString(arabNum);
+        return String.valueOf(answer);
     }
 }

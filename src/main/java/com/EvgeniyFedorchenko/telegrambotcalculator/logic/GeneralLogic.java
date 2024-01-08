@@ -1,8 +1,8 @@
 package com.evgeniyfedorchenko.telegrambotcalculator.logic;
 
 import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.BracketsCountException;
-import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.UncorrectedRomanOperand;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +16,9 @@ public class GeneralLogic {
     public static boolean romanOperandsArePresent = false;
 
 
-    public static String mainCalc(String expression) throws UncorrectedRomanOperand, BracketsCountException {
+    public static String mainCalc(String expression) throws BracketsCountException {
 
-
+        MaybeOop maybe = new MaybeOop(expression);
         List<String> listOfInput = bringToStandard(expression);
 
 
@@ -30,8 +30,12 @@ public class GeneralLogic {
                 listOfInput.set(listOfInput.indexOf(s), ConvertingToArabNum(s));
             }
         }*/
+        maybe.getListOfInput().stream()
+                .filter(RomanNumeralsUtils::liteRomanChecker)
+                .forEach(s -> maybe.setListValue(maybe.getIndexOfListElement(s), ConvertingToArabNum(s)));
+
         listOfInput.stream()
-                .filter(RomanNumeralsUtils::checkRoman)
+                .filter(RomanNumeralsUtils::liteRomanChecker)
                 .forEach(s -> listOfInput.set(listOfInput.indexOf(s), ConvertingToArabNum(s)));
 
 
@@ -64,25 +68,26 @@ public class GeneralLogic {
         }*/
         int innerOpenBracketPosition = IntStream.range(0, listOfInput.size())
                 .filter(i -> listOfInput.get(i).equals("("))
-                .reduce((first, second) -> second).orElse(0);
+                .sum();
 
         int innerCloseBracketPosition = IntStream.range(innerOpenBracketPosition, listOfInput.size())
                 .filter(i -> listOfInput.get(i).equals(")"))
                 .findFirst().orElse(0);
 
-        return listOfInput.subList(innerOpenBracketPosition, innerCloseBracketPosition);
+        return new ArrayList<>(listOfInput.subList(innerOpenBracketPosition, innerCloseBracketPosition));
     }
 
     private static List<String> bringToStandard(String expression) {
 
-        String signs = "()!^√*/+-";
         return Arrays.asList(expression.toUpperCase()
 
                 .replace(" ", "")
                 .replace("÷", "/")
                 .replace(":", "/")
 
-                .split("(?<=[" + signs + "])|(?=[" + signs + "])"));
+                .replaceAll("([^!])(!)", "$2$1")
+
+                .split("(?<=[()!^√*/+])|(?=[()!^√*/+])"));
     }
 
     private static boolean validateBrackets(List<String> listOfInput) {
