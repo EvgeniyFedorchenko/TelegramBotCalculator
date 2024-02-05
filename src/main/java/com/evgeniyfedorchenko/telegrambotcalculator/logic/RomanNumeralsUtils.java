@@ -23,7 +23,7 @@ public class RomanNumeralsUtils {
         boolean isRoman = CONVERT_MAP.containsKey(operand.split("")[0]);
 
         if (isRoman && !deepRomanChecker(operand)) {
-            throw new UncorrectedRomanOperand("Uncorrected roman operand: ", operand);
+            throw new UncorrectedRomanOperand("Uncorrected roman operand: " + operand, operand);
         } else if (isRoman) {
             GeneralLogic.romanOperandsArePresent = true;
             return true;
@@ -31,7 +31,7 @@ public class RomanNumeralsUtils {
         return false;
     }
 
-    public static boolean deepRomanChecker(String romanOperand) {
+    private static boolean deepRomanChecker(String romanOperand) {
 
         List<String> operandAsList = Arrays.asList(romanOperand.split(""));
         String romanNumbs = String.join("", CONVERT_MAP.keySet()).substring(4);
@@ -47,9 +47,9 @@ public class RomanNumeralsUtils {
         return true;
     }
 
-    public static String ConvertingToArabNum(String operand) {
+    public static String convertingToArabNum(String operand) {
 
-        List<String> operandAsList = new ArrayList<>(List.of(operand.split("")));
+        List<String> operandAsList = new ArrayList<>(List.of(operand.split("\\.")));
         int answer = CONVERT_MAP.get(operandAsList.get(operandAsList.size() - 1));
 
         for (int i = operandAsList.size() - 1; i > 0; i--) {
