@@ -2,95 +2,107 @@ package com.evgeniyfedorchenko.telegrambotcalculator.logic;
 
 import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.BracketsCountException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static com.evgeniyfedorchenko.telegrambotcalculator.logic.RomanNumeralsUtils.ConvertingToArabNum;
+import static com.evgeniyfedorchenko.telegrambotcalculator.logic.RomanNumeralsUtils.*;
+import static com.evgeniyfedorchenko.telegrambotcalculator.logic.RomanNumeralsUtils.convertingToArabNum;
 
 public class GeneralLogic {
 
     public static boolean romanOperandsArePresent = false;
+    private List<String> listOfInput;
 
 
-    public static String mainCalc(String expression) throws BracketsCountException {
+    public String mainCalc(String input) {
 
-        MaybeOop maybe = new MaybeOop(expression);
-        List<String> listOfInput = bringToStandard(expression);
-
+        // Create object
+        listOfInput = bringToStandard(input);
 
         // Разделение режимов
 
-
-        /*for (String s : listOfInput) {
-            if (checkRoman(s)) {
-                listOfInput.set(listOfInput.indexOf(s), ConvertingToArabNum(s));
-            }
-        }*/
-        maybe.getListOfInput().stream()
-                .filter(RomanNumeralsUtils::liteRomanChecker)
-                .forEach(s -> maybe.setListValue(maybe.getIndexOfListElement(s), ConvertingToArabNum(s)));
-
+        // Validation roman numbers and  maybe convert them
         listOfInput.stream()
                 .filter(RomanNumeralsUtils::liteRomanChecker)
-                .forEach(s -> listOfInput.set(listOfInput.indexOf(s), ConvertingToArabNum(s)));
+                .forEach(this::convert);
 
-
-        while (listOfInput.contains("(")) {
-            if (!validateBrackets(listOfInput)) {
-                throw new BracketsCountException("Count of opening and closing brackets is not equal in expression: " + expression);
-            }
-            List<String> deepestExpression = searchDeepestExpression(listOfInput);
-            // Считаем, пересобираем
+        // Validation brackets
+        if (!validateBrackets(listOfInput)) {
+            throw new BracketsCountException("Opening/closing brackets count isn't equal in expression: " + input);
         }
 
+        // calculation
+        SimpleCalculator simpleCalculator = new SimpleCalculator();
+        String answer = simplifyExpression(simpleCalculator);
 
-        // return answer from mainCalc()
-        return null;
+        // maybe reverseConvert answer
+        if (romanOperandsArePresent) {
+            answer = convertingToRomanNum(Integer.parseInt(answer));
+        }
+
+        // return answer
+        return answer;
     }
 
+    private String simplifyExpression(SimpleCalculator simpleCalculator) {
+
+        if (listOfInput.contains("(") || listOfInput.size() > 1) {
+            List<String> deepestExpression = searchDeepestExpression(listOfInput);   // вместе со скобками
+            String interimResult = simpleCalculator.calculateExpression(new ArrayList<>(deepestExpression));
+
+            int startIndex = listOfInput.indexOf(deepestExpression.get(0));
+            int endIndex = listOfInput.indexOf(deepestExpression.get(deepestExpression.size() - 1));
+            listOfInput.add(startIndex, interimResult);
+            listOfInput.subList(startIndex + 1, endIndex + 2).clear();
+
+            return simplifyExpression(simpleCalculator);
+
+        } else {
+            return listOfInput.get(0);
+        }
+    }
+
+    private void convert(String value) {
+        listOfInput.set(listOfInput.indexOf(value), convertingToArabNum(value));
+    }
 
     private static List<String> searchDeepestExpression(List<String> listOfInput) {
 
-        /*int innermostOpenBracketPosition = 0;
-
+        int innermostOpenBracketPosition = 0;
         for (int i = 0; i < listOfInput.size(); i++) {
+
             if (listOfInput.get(i).equals("(")) {
                 innermostOpenBracketPosition = i;
+            } else if (listOfInput.get(i).equals(")")) {
+                return new ArrayList<>(listOfInput.subList(innermostOpenBracketPosition, i + 1));   // со скобками
             }
-            if (listOfInput.get(i).equals(")")) {
-                List<String> deepestExpression = listOfInput.subList(innermostOpenBracketPosition + 1, i);
-                return new ArrayList<>(deepestExpression);
-            }
-        }*/
-        int innerOpenBracketPosition = IntStream.range(0, listOfInput.size())
-                .filter(i -> listOfInput.get(i).equals("("))
-                .sum();
-
-        int innerCloseBracketPosition = IntStream.range(innerOpenBracketPosition, listOfInput.size())
-                .filter(i -> listOfInput.get(i).equals(")"))
-                .findFirst().orElse(0);
-
-        return new ArrayList<>(listOfInput.subList(innerOpenBracketPosition, innerCloseBracketPosition));
+        }
+        return listOfInput;
     }
 
     private static List<String> bringToStandard(String expression) {
 
-        return Arrays.asList(expression.toUpperCase()
+        List<String> standardList = new ArrayList<>(Arrays.asList(expression.toUpperCase()
+                .replaceAll(",", ".")
+                .replaceAll(" ", "")
+                .replaceAll("÷", "/")
+                .replaceAll(":", "/")
+                .split("(?<=[()!^√*/+-])|(?=[()!^√*/+-])")));
 
-                .replace(" ", "")
-                .replace("÷", "/")
-                .replace(":", "/")
-
-                .replaceAll("([^!])(!)", "$2$1")
-
-                .split("(?<=[()!^√*/+])|(?=[()!^√*/+])"));
+        /* Данные вставки нужны, чтобы работать с выражением по общим правилам,
+           где 3 составляющих: два операнда и знак действия (см. SimpleCalculator.calculating) */
+        for (int i = 0; i < standardList.size(); i++) {
+            if (standardList.get(i).equals("√") && !standardList.get(i - 1).matches("^[+-]?(\\d*\\.)?\\d+$")) {
+                standardList.add(i, "2");
+            }
+            if (standardList.get(i).equals("!")) {
+                standardList.add(i + 1, "factorial");
+            }
+        }
+        return standardList;
     }
 
-    private static boolean validateBrackets(List<String> listOfInput) {
+    private boolean validateBrackets(List<String> listOfInput) {
 
         Map<String, Long> brackets = listOfInput.stream()
                 .filter(s -> s.equals(")") || s.equals("("))
