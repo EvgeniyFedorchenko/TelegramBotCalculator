@@ -5,6 +5,7 @@ import com.evgeniyfedorchenko.telegrambotcalculator.exceptions.BracketsCountExce
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.evgeniyfedorchenko.telegrambotcalculator.logic.RomanNumeralsUtils.*;
 import static com.evgeniyfedorchenko.telegrambotcalculator.logic.RomanNumeralsUtils.convertingToArabNum;
 
 public class GeneralLogic {
@@ -18,22 +19,29 @@ public class GeneralLogic {
         // Create object
         listOfInput = bringToStandard(input);
 
-
         // Разделение режимов
 
-
-        // Validation roman numbers and convert them
+        // Validation roman numbers and  maybe convert them
         listOfInput.stream()
                 .filter(RomanNumeralsUtils::liteRomanChecker)
                 .forEach(this::convert);
 
-        // Search deepest expression
+        // Validation brackets
         if (!validateBrackets(listOfInput)) {
             throw new BracketsCountException("Opening/closing brackets count isn't equal in expression: " + input);
         }
 
+        // calculation
         SimpleCalculator simpleCalculator = new SimpleCalculator();
-        return simplifyExpression(simpleCalculator);
+        String answer = simplifyExpression(simpleCalculator);
+
+        // maybe reverseConvert answer
+        if (romanOperandsArePresent) {
+            answer = convertingToRomanNum(Integer.parseInt(answer));
+        }
+
+        // return answer
+        return answer;
     }
 
     private String simplifyExpression(SimpleCalculator simpleCalculator) {
@@ -54,8 +62,8 @@ public class GeneralLogic {
         }
     }
 
-    private void convert(String s) {
-        listOfInput.set(listOfInput.indexOf(s), convertingToArabNum(s));
+    private void convert(String value) {
+        listOfInput.set(listOfInput.indexOf(value), convertingToArabNum(value));
     }
 
     private static List<String> searchDeepestExpression(List<String> listOfInput) {
@@ -94,7 +102,7 @@ public class GeneralLogic {
         return standardList;
     }
 
-    private static boolean validateBrackets(List<String> listOfInput) {
+    private boolean validateBrackets(List<String> listOfInput) {
 
         Map<String, Long> brackets = listOfInput.stream()
                 .filter(s -> s.equals(")") || s.equals("("))

@@ -15,8 +15,8 @@ public class TelegramBotCalculatorApplication {
     }
 
     @Bean
-    TelegramBotsApi telegramBotsApi(TelegramBot telegramBot) throws TelegramApiException {
-
+    public TelegramBotsApi telegramBotsApi(TelegramBot telegramBot) throws TelegramApiException {
+        
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
         telegramBotsApi.registerBot(telegramBot);
         return telegramBotsApi;

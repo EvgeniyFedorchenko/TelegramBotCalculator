@@ -41,9 +41,8 @@ public class SimpleCalculator {
 
         List<String> simplestExpression = new ArrayList<>(expression.subList(i - 1, i + 2));
 
-        String result = calculating(simplestExpression);
         expression.removeAll(simplestExpression);
-        expression.add(i - 1, result);
+        expression.add(i - 1, calculating(simplestExpression));
     }
 
 
